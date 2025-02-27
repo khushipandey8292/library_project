@@ -1,6 +1,8 @@
 from django.shortcuts import render,HttpResponseRedirect
 from .forms import SignupForm,LoginForm
+from .models import BooKtable
 from django.contrib import messages
+from django.db.models import Q
 from django.contrib.auth import authenticate,login,logout
 def home(request):
     return render(request,'index.html')
@@ -42,3 +44,17 @@ def dashboard(request):
 def user_logout(request):
     logout(request)
     return HttpResponseRedirect('/home/')
+
+
+def search_book(request):
+    query = request.GET.get('q', '') 
+    book =  BooKtable.objects.all()
+
+    if query: 
+        book = BooKtable.objects.filter(Q(book_name__icontains=query)
+                                        |Q(book_cate__icontains=query)
+                                        |Q(book_published_year__icontains=query)
+                                        |Q(authors__author_name__icontains=query))
+
+    return render(request, "bookdetails.html", {"books": book, "query": query})
+

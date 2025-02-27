@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="col-sm-12 " style='margin-top:100px;'></div>
+<h3>Book Details</h3>
+{% for book in books %}
+  <p><strong>Book Name : </strong>{{book.book_name}}</p>
+  <p><strong>Book Category : </strong>{{book.book_cate}}</p>
+  <p><strong>Book year : </strong>{{book.book_published_year}}</p>
+
+    {% for auth in book.authors.all %}
+     <p><strong>Author Name : </strong>{{auth.author_name}}</p>
+    {% endfor %}
+{% endfor %}
+{% endblock content %}
