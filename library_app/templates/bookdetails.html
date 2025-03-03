@@ -2,14 +2,25 @@
 {% load static %}
 {% block content %}
 <div class="col-sm-12 " style='margin-top:100px;'></div>
-<h3>Book Details</h3>
+<h3>Book Detail</h3>
 {% for book in books %}
-  <p><strong>Book Name : </strong>{{book.book_name}}</p>
-  <p><strong>Book Category : </strong>{{book.book_cate}}</p>
-  <p><strong>Book year : </strong>{{book.book_published_year}}</p>
-
-    {% for auth in book.authors.all %}
-     <p><strong>Author Name : </strong>{{auth.author_name}}</p>
-    {% endfor %}
+    <div class="card">
+      <div class="card-body">
+          <h2 class="card-title">{{book.book_name}}</h2>
+          {% for auth in book.authors.all %}
+          <h6 class="card-subtitle mb-2 text-muted">by{{auth.author_name}}</h6>
+          {% endfor %}
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <p><strong>Book Category : </strong>{{book.book_cate}}</p>
+              <p><strong>Book year : </strong>{{book.book_published_year}}</p>
+            </div>
+          </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <p>No books found.</p>
+    </div>
 {% endfor %}
 {% endblock content %}

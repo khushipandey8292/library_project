@@ -1,5 +1,6 @@
-from django.shortcuts import render,HttpResponseRedirect
+from django.shortcuts import render,HttpResponseRedirect,redirect
 from .forms import SignupForm,LoginForm
+from .forms import BookForm
 from .models import BooKtable
 from django.contrib import messages
 from django.db.models import Q
@@ -19,42 +20,89 @@ def signup(request):
       form=SignupForm()
     return render(request,'signup.html',{'form':form})
 
-
 def user_login(request):
-    if not request.user.is_authenticated:
-        if request.method=="POST":
-            form=LoginForm(request=request,data=request.POST)
-            if form.is_valid():
-                uname=form.cleaned_data['username']
-                upass=form.cleaned_data['password']
-                user=authenticate(username=uname,password=upass)
-                if user is not None:
-                    login(request,user)
-                    messages.success(request,'logged in successfully') 
-                    return HttpResponseRedirect('/dashboard/')        
-        else:
-            form=LoginForm()
-        return render(request,'login.html',{'form':form})   
-    else: 
-        return HttpResponseRedirect('/dashboard/')
-    
+    if request.method == "POST":
+        form=LoginForm(request.POST)
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        user = authenticate(request, username=username, password=password) 
+
+        if user is not None:
+            login(request, user)  
+
+            if user.is_superuser:
+                return HttpResponseRedirect("/admin_dashboard/")  
+            else:
+                return HttpResponseRedirect("/dashboard/") 
+    else:
+        form=LoginForm()
+    return render(request, "login.html",{'form':form})   
+
+
 def dashboard(request):
-    return render(request,'dashboard.html')
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect("/login/") 
+
+    if request.user.is_superuser:
+        return render(request, "admin_dashboard.html")  
+    else:
+        return render(request, "dashboard.html") 
+
 
 def user_logout(request):
     logout(request)
-    return HttpResponseRedirect('/home/')
+    return HttpResponseRedirect('/')
 
 
 def search_book(request):
-    query = request.GET.get('q', '') 
-    book =  BooKtable.objects.all()
+    query = request.GET.get('q','') 
+    # book =  BooKtable.objects.all()
 
     if query: 
         book = BooKtable.objects.filter(Q(book_name__icontains=query)
                                         |Q(book_cate__icontains=query)
                                         |Q(book_published_year__icontains=query)
                                         |Q(authors__author_name__icontains=query))
+    else:
+        return HttpResponseRedirect('/')
 
     return render(request, "bookdetails.html", {"books": book, "query": query})
 
+def create_book(request):
+    if request.method=='POST':
+        form=BookForm(request.POST)
+        if form.is_valid():
+            book = form.save(commit=False)  
+            book.save()  
+            book.authors.set(form.cleaned_data['authors'])
+            messages.success(request,'Book created successfully!')
+            return redirect('book-create')
+    else:
+        form=BookForm()
+    return render(request,'addbook.html',{'form':form})
+
+def book_list(request):
+    books=BooKtable.objects.all().order_by('id')
+    return render(request,'book_list.html',{'books':books})
+
+def book_detail(request,pk):
+    book=BooKtable.objects.get(pk=pk)
+    return render(request,'book_detail.html',{'book':book})
+
+def book_update(request,pk):
+    book=BooKtable.objects.get(pk=pk)
+    if request.method=="POST":
+        form=BookForm(request.POST,instance=book)
+        if form.is_valid():
+            form.save()
+            messages.success(request,'Book-updated successfully!!')
+            return redirect('book-update',pk=book.pk)
+    else:
+        form=BookForm(instance=book)
+    return render(request,'addbook.html',{'form':form})
+
+def book_delete(request,pk):
+    book=BooKtable.objects.get(pk=pk)
+    book.delete()
+    messages.success(request,"Book deleted successfully!!")
+    return redirect('book-list')

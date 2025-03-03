@@ -19,10 +19,16 @@ from django.urls import path
 from library_app import views
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('home/',views.home,name='home'),
+    path('',views.home,name='home'),
     path('signup/',views.signup,name='signup'),
     path('user_login/',views.user_login,name='login'),
     path('dashboard/',views.dashboard,name='dashboard'),
+    path("admin_dashboard/",views.dashboard, name="admin_dashboard"),
     path('user_logout/',views.user_logout,name='logout'),
     path("search/", views.search_book, name="search_book"),
+    path('create/',views.create_book,name='book-create'),
+    path('show/',views.book_list,name="book-list"),
+    path('book/<int:pk>/',views.book_detail,name='book-detail'),
+    path('book/<int:pk>/edit/',views.book_update,name='book-update'),
+    path('book/<int:pk>/delete/',views.book_delete,name='book-delete'),
 ]
