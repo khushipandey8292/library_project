@@ -2,8 +2,8 @@
 {% load  static %}
 {% block content %}
 <div class="col-sm-12 " style='margin-top:100px;'></div>
-<div class="card">
-    <div class="card-body">
+<div class="card">    
+    <div class="card-body">    
         <h2 class="card-title">{{book.book_name}}</h2>
         {% for auth in book.authors.all %}
                     <h6 class="card-subtitle mb-2 text-muted">by{{auth.author_name}}</h6>
@@ -18,8 +18,22 @@
     </div>
 </div>
         <div class="mt-4">
-            <a href="{% url 'book-update' book.pk %}" class="btn btn-primary">Edit</a>
-            <a href="{% url 'book-delete' book.pk %}" class="btn btn-danger">Delete</a>
+            {% if perms.library_app.delete_book %}
+            <form action="{% url 'book-delete' book.pk %}" method='post' class="d-inline">
+                {% csrf_token %}
+                <input type="submit" class="btn btn-danger" value="Delete">
+            </form>
+        {% endif %}
+    
+        {% if perms.library_app.edit_book %}
+        <form action="{% url 'book-update' book.pk %}"  class="d-inline">
+            {% csrf_token %}
+            <input type="submit" class="btn btn-warning" value="Edit">
+        </form>
+        {% else %}
+            <a href="{% url 'book-list' %}" class="btn btn-warning">Issue Book</a>
+            <a href="{% url 'book-list' %}" class="btn btn-danger">Return Book</a>
+        {% endif %}
             <a href="{% url 'book-list' %}" class="btn btn-primary">Back to List</a>
         </div>
 {% endblock content %}

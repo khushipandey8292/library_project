@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.core.validators import MaxValueValidator,MinValueValidator
 class Authortable(models.Model):
     author_name=models.CharField(max_length=50)
@@ -15,4 +16,5 @@ class BooKtable(models.Model):
     
     def book_written_by(self):
         return ",".join([str(p) for p in self.authors.all()])
+    
     

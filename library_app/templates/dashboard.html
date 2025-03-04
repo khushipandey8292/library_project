@@ -2,7 +2,10 @@
 {% load  static  %}
 {% block content %}
 <div class="col-sm-12 " style='margin-top:100px;'></div>
-<h1 style="color:black;"><i>You can open books PDF</i></h1>
-{% comment %} <a  href="{% url 'logout' %}"><input type="submit" value="logout" class="btn btn-primary"></a> {% endcomment %}
+<h1 style=" text-align: center; color:black;"><i>User Dashboard</i></h1>
+<div style="text-align: center; margin-top: 20px;">
+   <a href="{% url 'book-list' %}"><input type="submit" value="Issue/Return Book" class="btn btn-primary"></a>
+</div>
+{% comment %} <a href="{% url 'book-detail' book.id %}" class="btn btn-sm btn-primary">View Details</a> {% endcomment %}
 
 {% endblock content %}

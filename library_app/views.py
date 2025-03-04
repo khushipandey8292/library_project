@@ -89,12 +89,15 @@ def book_detail(request,pk):
     book=BooKtable.objects.get(pk=pk)
     return render(request,'book_detail.html',{'book':book})
 
+
 def book_update(request,pk):
     book=BooKtable.objects.get(pk=pk)
     if request.method=="POST":
         form=BookForm(request.POST,instance=book)
         if form.is_valid():
-            form.save()
+            book = form.save(commit=False)  
+            book.save()  
+            book.authors.set(form.cleaned_data['authors'])
             messages.success(request,'Book-updated successfully!!')
             return redirect('book-update',pk=book.pk)
     else:
@@ -106,3 +109,5 @@ def book_delete(request,pk):
     book.delete()
     messages.success(request,"Book deleted successfully!!")
     return redirect('book-list')
+
+
