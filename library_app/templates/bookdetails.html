@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<div class="col-sm-12 " style='margin-top:100px;'></div>
-<h3>Book Detail</h3>
+<div class="col-sm-5 " style='margin-top:100px;'></div>
+<h3 style="color:black;"><i>Book Detail</i></h3><br><br>
 {% for book in books %}
-    <div class="card">
+    <div class="card col-sm-5">
       <div class="card-body">
           <h2 class="card-title">{{book.book_name}}</h2>
           {% for auth in book.authors.all %}

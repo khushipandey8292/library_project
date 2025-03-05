@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
 {% load  static %}
 {% block content %}
-<div class="col-sm-12 " style='margin-top:100px;'></div>
-<div class="card">    
-    <div class="card-body">    
+<div class="col-sm-10 " style='margin-top:100px;'></div>
+<div class="card col-sm-5">    
+    <div class="card-body"> 
+        <h5>Rating: {{ book.rating }} / 5</h5>   
         <h2 class="card-title">{{book.book_name}}</h2>
         {% for auth in book.authors.all %}
-                    <h6 class="card-subtitle mb-2 text-muted">by{{auth.author_name}}</h6>
+                    <h6 class="card-subtitle mb-2 text-muted">by  {{auth.author_name}}</h6>
         {% endfor %}
 
         <div class="row mb-3">
@@ -31,7 +32,7 @@
             <input type="submit" class="btn btn-warning" value="Edit">
         </form>
         {% else %}
-            <a href="{% url 'book-list' %}" class="btn btn-warning">Issue Book</a>
+            <a href="{% url 'borrow-book' %}" class="btn btn-warning">Issue Book</a>
             <a href="{% url 'book-list' %}" class="btn btn-danger">Return Book</a>
         {% endif %}
             <a href="{% url 'book-list' %}" class="btn btn-primary">Back to List</a>

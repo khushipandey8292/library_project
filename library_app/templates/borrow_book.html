@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load  static  %}
+{% block content %}
+<div class="col-sm-7 " style='margin-top:70px;'>
+<h2><i>Book is Borrowed by You</i></h2><br>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" class="btn btn-primary" value="Submit"><br><br>
+</form> 
+<a href="{% url 'book-list' %}" class="btn btn-warning">Back to Book List</a>
+{% endblock content %}

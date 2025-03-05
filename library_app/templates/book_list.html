@@ -6,11 +6,16 @@
     <div class="col">
         <div class="card h-100">
             <div class="card-body">
+                <p>Rating: {{ book.rating }} / 5</p>
                 <h5 class="card-title">{{book.book_name}}</h5>
                 {% for auth in book.authors.all %}
                     <h6 class="card-subtitle mb-2 text-muted">by{{auth.author_name}}</h6>
                 {% endfor %}
                 <a href="{% url 'book-detail' book.id %}" class="btn btn-sm btn-primary">View Details</a>
+                {% if perms.library_app.rate_book %}
+                {% else %}
+                  <a href="{% url 'rate_book' book.id %}">Rate this book</a>
+                {% endif %}
             </div>
         </div>
     </div>

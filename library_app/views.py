@@ -1,6 +1,6 @@
 from django.shortcuts import render,HttpResponseRedirect,redirect
-from .forms import SignupForm,LoginForm
-from .forms import BookForm
+from .forms import SignupForm,LoginForm,RatingForm
+from .forms import BookForm,BorrowForm
 from .models import BooKtable
 from django.contrib import messages
 from django.db.models import Q
@@ -111,3 +111,24 @@ def book_delete(request,pk):
     return redirect('book-list')
 
 
+def rate_book(request, pk):
+    book =BooKtable.objects.get (pk=pk)
+    if request.method == 'POST':
+        form = RatingForm(request.POST, instance=book)
+        if form.is_valid():
+            form.save()
+            return redirect('book-detail', pk=book.pk)
+    else:
+        form = RatingForm(instance=book)
+    
+    return render(request, 'rate_book.html', {'form': form, 'book': book})
+
+def borrow_book(request):
+    if request.method=='POST':
+        form=BorrowForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form=BorrowForm()
+    else:
+        form=BorrowForm()
+    return render(request,'borrow_book.html',{'form':form})
