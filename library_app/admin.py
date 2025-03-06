@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Authortable,BooKtable,BorrowRecord
+from .models import Authortable,BooKtable #, BorrowedBooks
 @admin.register(Authortable)
 class AuthortableAdmin(admin.ModelAdmin):
     list_display=['id','author_name']
@@ -8,6 +8,6 @@ class AuthortableAdmin(admin.ModelAdmin):
 class BooktableAdmin(admin.ModelAdmin):
     list_display=['id','book_name','book_cate','book_published_year','book_written_by','rating']
 
-@admin.register(BorrowRecord)
-class BorrowRecordAdmin(admin.ModelAdmin):
-    list_display=['id','user','borrow_date','book']
+# @admin.register(BorrowedBooks)
+# class BorrowAdmin(admin.ModelAdmin):
+#     list_display=['user','book','borrow_date','return_date']

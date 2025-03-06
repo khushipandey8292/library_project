@@ -1,16 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<div class="row row-cols-1 row-cols-md-3 g-4" style='margin-top:100px;'></div>
+<div class="row row-cols-1 row-cols-md-3 g-4" style='margin-top:100px;'>
     {% for book in books %}
     <div class="col">
         <div class="card h-100">
             <div class="card-body">
                 <p>Rating: {{ book.rating }} / 5</p>
                 <h5 class="card-title">{{book.book_name}}</h5>
-                {% for auth in book.authors.all %}
-                    <h6 class="card-subtitle mb-2 text-muted">by{{auth.author_name}}</h6>
-                {% endfor %}
+                <h6 class="card-subtitle mb-2 text-muted">Author: {{ book.authors.all|join:", " }}</h6>
                 <a href="{% url 'book-detail' book.id %}" class="btn btn-sm btn-primary">View Details</a>
                 {% if perms.library_app.rate_book %}
                 {% else %}
@@ -24,4 +22,16 @@
         <p>No books found.</p>
     </div>
     {% endfor %}
+    <div class="text-">
+        <span>
+            {% if books.has_previous %}
+            <a href="?page={{books.previous_page_number}}">Previous</a><br>
+            {% endif %}
+            {% comment %} <span>Page {{page_obj.number}} of {{page_obj.paginator.num_pages}} {% endcomment %}
+            {% if books.has_next %}
+            <a href="?page={{books.next_page_number}}">Next</a>
+            {% endif %}
+        </span>
+    </div>
+</div>
 {% endblock content %}

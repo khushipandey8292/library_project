@@ -7,9 +7,7 @@
     <div class="card col-sm-5">
       <div class="card-body">
           <h2 class="card-title">{{book.book_name}}</h2>
-          {% for auth in book.authors.all %}
-          <h6 class="card-subtitle mb-2 text-muted">by{{auth.author_name}}</h6>
-          {% endfor %}
+          <h6 class="card-subtitle mb-2 text-muted">Author: {{ book.authors.all|join:", " }}</h6>
           <div class="row mb-3">
             <div class="col-md-6">
               <p><strong>Book Category : </strong>{{book.book_cate}}</p>

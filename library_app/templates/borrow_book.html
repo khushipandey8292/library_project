@@ -2,7 +2,6 @@
 {% load  static  %}
 {% block content %}
 <div class="col-sm-7 " style='margin-top:70px;'>
-<h2><i>Book is Borrowed by You</i></h2><br>
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}

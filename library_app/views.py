@@ -1,9 +1,10 @@
 from django.shortcuts import render,HttpResponseRedirect,redirect
 from .forms import SignupForm,LoginForm,RatingForm
-from .forms import BookForm,BorrowForm
+from .forms import BookForm
 from .models import BooKtable
 from django.contrib import messages
 from django.db.models import Q
+from django.core.paginator import Paginator
 from django.contrib.auth import authenticate,login,logout
 def home(request):
     return render(request,'index.html')
@@ -82,8 +83,12 @@ def create_book(request):
     return render(request,'addbook.html',{'form':form})
 
 def book_list(request):
-    books=BooKtable.objects.all().order_by('id')
-    return render(request,'book_list.html',{'books':books})
+    all_post=BooKtable.objects.all().order_by('id')
+    paginator=Paginator(all_post,per_page=3)
+    page_number=request.GET.get('page')
+    page_obj=paginator.get_page(page_number)
+    return render(request,'book_list.html',{'books':page_obj})
+
 
 def book_detail(request,pk):
     book=BooKtable.objects.get(pk=pk)
@@ -123,12 +128,5 @@ def rate_book(request, pk):
     
     return render(request, 'rate_book.html', {'form': form, 'book': book})
 
-def borrow_book(request):
-    if request.method=='POST':
-        form=BorrowForm(request.POST)
-        if form.is_valid():
-            form.save()
-            form=BorrowForm()
-    else:
-        form=BorrowForm()
-    return render(request,'borrow_book.html',{'form':form})
+
+
