@@ -11,9 +11,15 @@ class Authortable(models.Model):
 class BooKtable(models.Model):
     authors=models.ManyToManyField(Authortable)
     book_name=models.CharField(max_length=60)
+    book_sr_no=models.IntegerField(unique=True)
     book_cate=models.CharField(max_length=70)
     book_published_year=models.DateField()
     rating=models.FloatField(validators=[MinValueValidator(0),MaxValueValidator(5)],default=0.0)
+    #liked_by=models.ManyToManyField(User,related_name='liked_books',blanks=True)
+    
+    
+    # def total_likes(self):
+    #     return self.liked_by.count()
     
     def book_written_by(self):
         return ",".join([str(p) for p in self.authors.all()])
@@ -23,10 +29,11 @@ class BooKtable(models.Model):
     
 class Borrow(models.Model):
     book=models.ForeignKey(BooKtable,on_delete=models.CASCADE)
-    user=models.ForeignKey(User,on_delete=models.CASCADE)
-    borrow_date=models.DateField(auto_now_add=True)
+    user=models.ForeignKey(User,on_delete=models.CASCADE) 
+    issue_date = models.DateField(auto_now_add=True)
     return_date=models.DateField(null=True,blank=True)
-    
+
+        
     def __str__(self):
         return f"{self.user.username} borrowed {self.book.book_name}"
     

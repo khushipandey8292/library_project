@@ -1,11 +1,14 @@
 from django.shortcuts import render,HttpResponseRedirect,redirect
-from .forms import SignupForm,LoginForm,RatingForm
+from .forms import SignupForm,LoginForm,RatingForm,BorrowBookForm
 from .forms import BookForm
 from .models import BooKtable
 from django.contrib import messages
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+
 def home(request):
     return render(request,'index.html')
 
@@ -128,5 +131,16 @@ def rate_book(request, pk):
     
     return render(request, 'rate_book.html', {'form': form, 'book': book})
 
+from django.shortcuts import render, get_object_or_404, redirect
 
 
+def borrow_book(request):
+        if request.method == 'POST':
+            form = BorrowBookForm(request.POST)
+            if form.is_valid():
+              form.save()
+              form=BorrowBookForm()
+        else:
+            form = BorrowBookForm()
+        return render(request, 'borrow_book.html', {'form': form})
+    

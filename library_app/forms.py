@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm,UsernameField
 from django.contrib.auth.models import User
 from django.utils.translation import gettext,gettext_lazy as _
-from .models import BooKtable,Authortable
+from .models import BooKtable,Authortable,Borrow
 
 class SignupForm(UserCreationForm):
     password1=forms.CharField(label='Password',widget=forms.PasswordInput(attrs={'class':'form-control'}))
@@ -30,11 +30,12 @@ class BookForm(forms.ModelForm):
 
     class Meta:
         model = BooKtable
-        fields = ['book_name', 'book_cate', 'book_published_year', 'authors']
+        fields = ['book_name', 'book_cate', 'book_published_year','book_sr_no', 'authors']
         widgets = {
             'book_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter book name'}),
             'book_published_year': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'book_cate': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter book category'}),
+            'book_sr_no':forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter book serial number'}),
         }
 
     def clean_authors(self):
@@ -59,5 +60,8 @@ class RatingForm(forms.ModelForm):
         fields = ['rating']
         
         
-
+class BorrowBookForm(forms.ModelForm):
+    class Meta:
+        model = Borrow
+        fields = ['book','user','return_date']
         

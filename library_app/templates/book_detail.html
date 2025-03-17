@@ -29,7 +29,7 @@
             <input type="submit" class="btn btn-warning" value="Edit">
         </form>
         {% else %}
-            <a href="{% url 'book-list' %}" class="btn btn-warning">Borrow Book</a>
+            <a href="{% url 'borrow_book' %}" class="btn btn-warning">Borrow Book</a>
             <a href="{% url 'book-list' %}" class="btn btn-danger">Return Book</a>
         {% endif %}
             <a href="{% url 'book-list' %}" class="btn btn-primary">Back to List</a>

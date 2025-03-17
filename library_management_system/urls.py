@@ -32,5 +32,7 @@ urlpatterns = [
     path('book/<int:pk>/edit/',views.book_update,name='book-update'),
     path('book/<int:pk>/delete/',views.book_delete,name='book-delete'),
     path('rate/<int:pk>/',views.rate_book, name='rate_book'),
-  
+    path('borrow/', views.borrow_book, name='borrow_book'),
 ]
+
+  
