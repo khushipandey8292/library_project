@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% load  static  %}
 {% block content %}
-<h2>Rate {{ book.title }}</h2>
+<h2 style="color:black;"class="my-3">Rate </h2>
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Submit Rating</button>
+    <button type="submit" class="btn btn-primary">Submit Rating</button>
+    <a href="{% url 'book-list' %}">Back to Book List</a>
 </form>
-<a href="{% url 'book-list' %}">Back to Book List</a>
 {% endblock content %}

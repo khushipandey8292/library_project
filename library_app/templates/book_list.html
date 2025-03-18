@@ -7,12 +7,14 @@
         <div class="card h-100">
             <div class="card-body">
                 <p> Rating: {{ book.rating }} / 5</p>
+                <p> Likes: {{ book.total_likes }}</p>
                 <h5 class="card-title">{{book.book_name}}</h5>
                 <h6 class="card-subtitle mb-2 text-muted">Author: {{ book.authors.all|join:", " }}</h6>
                 <a href="{% url 'book-detail' book.id %}" class="btn btn-sm btn-primary">View Details</a>
                 {% if perms.library_app.rate_book %}
                 {% else %}
-                  <a href="{% url 'rate_book' book.id %}">Rate this book</a>
+                  <a href="{% url 'rate_book' book.id %}">Rate this book</a><br>
+                  <a href="{% url 'like_book' book.id %}">Like/Unlike</a>
                 {% endif %}
             </div>
         </div>

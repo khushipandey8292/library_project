@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from library_app import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.home,name='home'),
@@ -33,6 +34,6 @@ urlpatterns = [
     path('book/<int:pk>/delete/',views.book_delete,name='book-delete'),
     path('rate/<int:pk>/',views.rate_book, name='rate_book'),
     path('borrow/', views.borrow_book, name='borrow_book'),
+    path('book/<int:pk>/like/', views.like_book, name='like_book'),
 ]
-
   

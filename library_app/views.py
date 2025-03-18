@@ -1,13 +1,14 @@
-from django.shortcuts import render,HttpResponseRedirect,redirect
-from .forms import SignupForm,LoginForm,RatingForm,BorrowBookForm
+from django.shortcuts import render,HttpResponseRedirect,redirect,get_object_or_404
+from .forms import SignupForm,LoginForm,RatingForm,BorrowBookForm,LikeForm
 from .forms import BookForm
-from .models import BooKtable
+from .models import BooKtable,Like_db,Borrow
 from django.contrib import messages
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.utils.timezone import now 
 
 def home(request):
     return render(request,'index.html')
@@ -131,16 +132,42 @@ def rate_book(request, pk):
     
     return render(request, 'rate_book.html', {'form': form, 'book': book})
 
-from django.shortcuts import render, get_object_or_404, redirect
 
 
 def borrow_book(request):
         if request.method == 'POST':
             form = BorrowBookForm(request.POST)
             if form.is_valid():
-              form.save()
+              borrow=form.save(commit=False)
+              borrow.book.available = False
+              borrow.book.save()
               form=BorrowBookForm()
         else:
             form = BorrowBookForm()
         return render(request, 'borrow_book.html', {'form': form})
     
+
+@login_required
+def like_book(request, pk):
+    book = get_object_or_404(BooKtable, pk=pk)
+    if request.method == 'POST':
+        form = LikeForm(request.POST)
+        if form.is_valid():
+           
+            existing_like = Like_db.objects.filter(user=request.user, book=book).first()
+            if existing_like:
+                existing_like.delete() 
+            else:
+                Like_db.objects.create(user=request.user, book=book) 
+
+            return redirect('book-detail', pk=book.pk)  
+    else:
+        form = LikeForm()
+
+    return render(request, 'like.html', {'form': form, 'book': book})
+
+
+
+
+
+

@@ -15,17 +15,16 @@ class BooKtable(models.Model):
     book_cate=models.CharField(max_length=70)
     book_published_year=models.DateField()
     rating=models.FloatField(validators=[MinValueValidator(0),MaxValueValidator(5)],default=0.0)
-    #liked_by=models.ManyToManyField(User,related_name='liked_books',blanks=True)
-    
-    
-    # def total_likes(self):
-    #     return self.liked_by.count()
+    available = models.BooleanField(default=True)
     
     def book_written_by(self):
         return ",".join([str(p) for p in self.authors.all()])
     
     def __str__(self):
         return self.book_name
+    
+    def total_likes(self):
+        return self.likes.count()
     
 class Borrow(models.Model):
     book=models.ForeignKey(BooKtable,on_delete=models.CASCADE)
@@ -36,8 +35,19 @@ class Borrow(models.Model):
         
     def __str__(self):
         return f"{self.user.username} borrowed {self.book.book_name}"
+
+            
+class Like_db(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(BooKtable, related_name="likes", on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+   
+    class Meta:
+        unique_together = ('user', 'book') 
+
+    def __str__(self):
+        return f"{self.user.username} likes {self.book.book_name}"
     
-  
-    
+   
 
     

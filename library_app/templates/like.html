@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load  static  %}
+{% block content %}
+
+<h2 style="color:black;"class="my-3">Like</h2>
+<form  method="post">
+    {% csrf_token %}
+    {% if request.user in book.likes.all %}
+        <button type="submit" class="btn btn-danger">Unlike</button>
+    {% else %}
+        <button type="submit" class="btn btn-primary">Submit Like</button><br>
+    {% endif %}
+    <a href="{% url 'book-list' %}">Back to Book List</a>
+</form>
+{% endblock content %}
