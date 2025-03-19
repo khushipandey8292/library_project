@@ -33,7 +33,10 @@ urlpatterns = [
     path('book/<int:pk>/edit/',views.book_update,name='book-update'),
     path('book/<int:pk>/delete/',views.book_delete,name='book-delete'),
     path('rate/<int:pk>/',views.rate_book, name='rate_book'),
-    path('borrow/', views.borrow_book, name='borrow_book'),
-    path('book/<int:pk>/like/', views.like_book, name='like_book'),
+    path('comments/<int:id>/',views.addcomment,name='comment'),
+    path('like/<int:id>/',views.book_like, name='like-book'),
+    path('borrow/<int:book_id>/',views.borrow_book, name='borrow_book'),
+    path('return/<int:borrow_id>/', views.return_book, name='return_book'),
+
 ]
   

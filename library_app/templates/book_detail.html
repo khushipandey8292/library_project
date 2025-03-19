@@ -1,37 +1,45 @@
 {% extends 'base.html' %}
 {% load  static %}
 {% block content %}
-<div class="col-sm-10 " style='margin-top:100px;'></div>
-<div class="card col-sm-5">    
-    <div class="card-body"> 
-        <h5>Rating: {{ book.rating }} / 5</h5>   
-        <h2 class="card-title">{{book.book_name}}</h2>
-        <h6 class="card-subtitle mb-2 text-muted">Author: {{ book.authors.all|join:", " }}</h6>
+<div class="col-sm-10" style="margin-top:100px;"></div>
+<div class="card col-sm-5">
+    <div class="card-body">
+        <h5>Rating: {{ book.rating }} / 5</h5>
+        <h2 class="card-title">{{ book.book_name }}</h2>
+        <h6 class="card-subtitle mb-2 text-muted">
+            Author: {{ book.authors.all|join:", " }}
+        </h6>
         <div class="row mb-3">
             <div class="col-md-6">
-                <p><strong>Category:</strong>{{book.book_cate}}</p>
-                <p><strong>Published Date:</strong>{{book.book_published_year}}</p>
+                <p><strong>Category:</strong> {{ book.book_cate }}</p>
+                <p><strong>Published Date:</strong> {{ book.book_published_year }}</p>
             </div>
         </div>
     </div>
 </div>
-        <div class="mt-4">
-            {% if perms.library_app.delete_book %}
-            <form action="{% url 'book-delete' book.pk %}" method='post' class="d-inline">
-                {% csrf_token %}
-                <input type="submit" class="btn btn-danger" value="Delete">
-            </form>
-        {% endif %}
-    
-        {% if perms.library_app.edit_book %}
-        <form action="{% url 'book-update' book.pk %}"  class="d-inline">
+<div class="mt-4">
+    {% if perms.library_app.delete_book %}
+        <form action="{% url 'book-delete' book.pk %}" method="post" class="d-inline">
             {% csrf_token %}
+            <input type="submit" class="btn btn-danger" value="Delete">
+        </form>
+    {% endif %}
+
+    {% if perms.library_app.edit_book %}
+        <form action="{% url 'book-update' book.pk %}" class="d-inline">
             <input type="submit" class="btn btn-warning" value="Edit">
         </form>
-        {% else %}
-            <a href="{% url 'borrow_book' %}" class="btn btn-warning">Borrow Book</a>
-            <a href="{% url 'book-list' %}" class="btn btn-danger">Return Book</a>
+    {% endif %}
+
+    {% if book.available_copies > 0 %}
+        <a href="{% url 'borrow_book' book.id %}" class="btn btn-primary">Borrow</a>
+    {% endif %}
+
+    {% for borrow in book.borrow_set.all %}
+        {% if borrow.user == request.user and not borrow.is_returned %}
+            <a href="{% url 'return_book' borrow.id %}" class="btn btn-success">Return</a>
         {% endif %}
-            <a href="{% url 'book-list' %}" class="btn btn-primary">Back to List</a>
-        </div>
+    {% endfor %}
+    <a href="{% url 'book-list' %}" class="btn btn-primary">Back to List</a>
+</div>
 {% endblock content %}

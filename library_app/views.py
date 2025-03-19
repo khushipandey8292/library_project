@@ -1,7 +1,7 @@
 from django.shortcuts import render,HttpResponseRedirect,redirect,get_object_or_404
-from .forms import SignupForm,LoginForm,RatingForm,BorrowBookForm,LikeForm
+from .forms import SignupForm,LoginForm,RatingForm
 from .forms import BookForm
-from .models import BooKtable,Like_db,Borrow
+from .models import BooKtable,Comment,Borrow
 from django.contrib import messages
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.utils.timezone import now 
+from datetime import date
 
 def home(request):
     return render(request,'index.html')
@@ -132,39 +133,59 @@ def rate_book(request, pk):
     
     return render(request, 'rate_book.html', {'form': form, 'book': book})
 
+def addcomment(request,id):
+            book=BooKtable.objects.get(pk=id)
+            comments = book.comment_set.all()
+            if request.method == "POST":
+                text = request.POST.get("text","").strip()
+                if text:
+                    Comment.objects.create(book=book, user=request.user,text=text)
+                    return redirect('comment', id=book.id)
+            return render(request,'comment.html',{'alldata':comments ,'book':book})
+        
+def book_like(request, id):
+        comment = Comment.objects.get(pk=id)
+        if request.user.is_authenticated:
+            if request.user in comment.likes.all():
+                comment.likes.remove(request.user)  
+            else:
+                comment.likes.add(request.user)
 
-
-def borrow_book(request):
-        if request.method == 'POST':
-            form = BorrowBookForm(request.POST)
-            if form.is_valid():
-              borrow=form.save(commit=False)
-              borrow.book.available = False
-              borrow.book.save()
-              form=BorrowBookForm()
-        else:
-            form = BorrowBookForm()
-        return render(request, 'borrow_book.html', {'form': form})
+        return redirect('comment', id=comment.book.id)
     
 
-@login_required
-def like_book(request, pk):
-    book = get_object_or_404(BooKtable, pk=pk)
-    if request.method == 'POST':
-        form = LikeForm(request.POST)
-        if form.is_valid():
-           
-            existing_like = Like_db.objects.filter(user=request.user, book=book).first()
-            if existing_like:
-                existing_like.delete() 
-            else:
-                Like_db.objects.create(user=request.user, book=book) 
+def borrow_book(request, book_id):
+    book = get_object_or_404(BooKtable, id=book_id)
 
-            return redirect('book-detail', pk=book.pk)  
+    if book.available_copies > 0:
+        borrow = Borrow.objects.create(user=request.user, book=book)
+        book.available_copies -= 1
+        book.save()
+        
+        messages.success(request, f"You have borrowed '{book.book_name}'. Return by {borrow.due_date}.")
     else:
-        form = LikeForm()
+        messages.error(request, "Sorry, this book is currently not available.")
+    
+    return redirect('home')
 
-    return render(request, 'like.html', {'form': form, 'book': book})
+
+def return_book(request, borrow_id):
+    borrow = get_object_or_404(Borrow, id=borrow_id, user=request.user)
+
+    if not borrow.is_returned:
+        borrow.is_returned = True
+        borrow.return_date = date.today()
+        borrow.book.available_copies += 1
+        borrow.book.save()
+        borrow.save()
+
+        messages.success(request, f"You have successfully returned '{borrow.book.book_name}'.")
+    else:
+        messages.warning(request, "This book is already returned.")
+
+    return redirect('home')
+    
+
 
 
 
