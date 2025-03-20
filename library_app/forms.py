@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm,UsernameField
 from django.contrib.auth.models import User
 from django.utils.translation import gettext,gettext_lazy as _
-from .models import BooKtable,Authortable
+from .models import BooKtable,Authortable,Borrow
 
 class SignupForm(UserCreationForm):
     password1=forms.CharField(label='Password',widget=forms.PasswordInput(attrs={'class':'form-control'}))
@@ -54,13 +54,16 @@ class BookForm(forms.ModelForm):
         return authors  
 
 
-class RatingForm(forms.ModelForm):
-    class Meta:
-        model = BooKtable
-        fields = ['rating']
-        
-        
 
+class Borrowform(forms.ModelForm):
+    class Meta:
+        model=Borrow
+        fields=['book','return_date','due_date']
+        widgets={
+                'book': forms.Select(attrs={'class': 'form-control'}),
+                'return_date':forms.DateInput(attrs={'class':'form-control'}),
+               'due_date':forms.TextInput(attrs={'class':'form-control'})       
+        }
 
 # class LikeForm(forms.ModelForm):
 #     class Meta:
@@ -68,4 +71,16 @@ class RatingForm(forms.ModelForm):
 #         fields = []
 
 
+# class RatingForm(forms.ModelForm):
+#     class Meta:
+#         model = BooKtable
+#         fields = ['rating']
 
+
+
+class RatingForm(forms.Form):
+    rating = forms.FloatField(
+        min_value=0,
+        max_value=5,
+        widget=forms.NumberInput(attrs={'step': 0.1})
+    )

@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Authortable,BooKtable,Borrow,Comment
+from .models import Authortable,BooKtable,Borrow,Comment,Bookrating
+
 @admin.register(Authortable)
 class AuthortableAdmin(admin.ModelAdmin):
     list_display=['id','author_name']
@@ -15,4 +16,7 @@ class BorrowAdmin(admin.ModelAdmin):
 @admin.register(Comment)
 class CommonAdmin(admin.ModelAdmin):
     list_display=['id','user','text','total_likes']
-    
+
+@admin.register(Bookrating)
+class Bookrating(admin.ModelAdmin):
+    list_display=['id','user','book','user_rating']

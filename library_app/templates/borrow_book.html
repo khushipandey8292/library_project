@@ -1,11 +1,22 @@
-{% for book in books %}
-    <h3>{{ book.title }}</h3>
-    <p>Author: {{ book.author }}</p>
-    <p>Available Copies: {{ book.available_copies }}</p>
-
-    {% if book.available_copies > 0 %}
-        <a href="{% url 'borrow_book' book.id %}" class="btn btn-primary">Borrow</a>
-    {% else %}
-        <button disabled class="btn btn-danger">Not Available</button>
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="col-sm-5"style="margin-left: 150px;">
+    {% if messages %}
+    {% for message in messages %}
+        <p {% if message.tags %} class="alert alert-{{message.tags}} mb-5" {% endif %}>{{message}}</p>
+    {% endfor %}
     {% endif %}
-{% endfor %}
+    <h3 class="text-black " style="margin-top:70px;"><i>Borrow Book</i></h3>
+    <form action="" method='POST'>
+        {% csrf_token %} 
+            {% for fm in form %}
+            <div class="form-group">
+                {{fm.label_tag}}{{fm}}{{fm.errors|striptags}}
+            </div>
+            {% endfor %}<br>
+            <input type="submit" value="Submit" class="btn btn-info">
+            <a href="{% url 'book-list' %}" class="btn btn-primary">Back to List</a>
+    </form>
+</div>
+{% endblock content %}  

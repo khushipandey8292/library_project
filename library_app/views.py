@@ -1,7 +1,7 @@
 from django.shortcuts import render,HttpResponseRedirect,redirect,get_object_or_404
-from .forms import SignupForm,LoginForm,RatingForm
+from .forms import SignupForm,LoginForm,RatingForm,Borrowform,RatingForm
 from .forms import BookForm
-from .models import BooKtable,Comment,Borrow
+from .models import BooKtable,Comment,Borrow,Bookrating
 from django.contrib import messages
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -99,6 +99,7 @@ def book_detail(request,pk):
     book=BooKtable.objects.get(pk=pk)
     return render(request,'book_detail.html',{'book':book})
 
+    
 
 def book_update(request,pk):
     book=BooKtable.objects.get(pk=pk)
@@ -121,17 +122,34 @@ def book_delete(request,pk):
     return redirect('book-list')
 
 
-def rate_book(request, pk):
-    book =BooKtable.objects.get (pk=pk)
-    if request.method == 'POST':
-        form = RatingForm(request.POST, instance=book)
-        if form.is_valid():
-            form.save()
-            return redirect('book-detail', pk=book.pk)
-    else:
-        form = RatingForm(instance=book)
+# def rate_book(request, pk):
+#     book =BooKtable.objects.get (pk=pk)
+#     if request.method == 'POST':
+#         form = RatingForm(request.POST, instance=book)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('book-detail', pk=book.pk)
+#     else:
+#         form = RatingForm(instance=book)
     
+#     return render(request, 'rate_book.html', {'form': form, 'book': book})
+
+def add_rating(request, pk):
+    book = get_object_or_404(BooKtable, id=pk)
+    if request.method == 'POST':
+        form = RatingForm(request.POST)
+        if form.is_valid():
+            rating_value = form.cleaned_data['rating']
+            rating, created = Bookrating.objects.update_or_create(
+                user=request.user,
+                book=book,
+                defaults={'user_rating': rating_value}
+            )
+            return redirect('book-detail', pk=pk)
+    else:
+        form = RatingForm()
     return render(request, 'rate_book.html', {'form': form, 'book': book})
+
 
 def addcomment(request,id):
             book=BooKtable.objects.get(pk=id)
@@ -154,19 +172,55 @@ def book_like(request, id):
         return redirect('comment', id=comment.book.id)
     
 
+# def borrow_book(request, book_id):
+#     book = get_object_or_404(BooKtable, id=book_id)
+#     if request.method=="POST":
+#         form=Borrowform(request.POST,instance=book)
+#         if form.is_valid():
+#             if book.available_copies > 0:
+#                 borrow = Borrow.objects.create(user=request.user, book=book)
+#                 book.available_copies -= 1
+#                 book.save()
+#                 messages.success(request, f"You have borrowed '{book.book_name}'. Return by {borrow.due_date}.")
+#         else:
+#              messages.error(request, "Sorry, this book is currently not available.")
+#     else:
+#         form=Borrowform()  
+#     return render(request,'borrow_book.html',{"form":form})
+
+
+
+
 def borrow_book(request, book_id):
     book = get_object_or_404(BooKtable, id=book_id)
+    already_borrowed = Borrow.objects.filter(user=request.user, book=book, is_returned=False).exists()
+    if already_borrowed:
+        messages.error(request, f"You have already borrowed '{book.book_name}'.")
 
-    if book.available_copies > 0:
-        borrow = Borrow.objects.create(user=request.user, book=book)
-        book.available_copies -= 1
-        book.save()
-        
-        messages.success(request, f"You have borrowed '{book.book_name}'. Return by {borrow.due_date}.")
+    if request.method == "POST":
+        form = Borrowform(request.POST)
+        if form.is_valid():
+            if book.available_copies > 0:
+                borrow = form.save(commit=False)
+                borrow.user = request.user
+                borrow.book = book
+                borrow.save()
+                print(book.available_copies, "Before update")
+                book.available_copies -= 1
+                print(book.available_copies, "After update")
+                book.save()
+
+                messages.success(request, f"You have borrowed '{book.book_name}'. Return by {borrow.due_date}.")
+            else:
+                messages.error(request, "Sorry, this book is currently not available.")
+        else:
+            messages.error(request, "Invalid data submitted.")
     else:
-        messages.error(request, "Sorry, this book is currently not available.")
-    
-    return redirect('home')
+        form = Borrowform()
+
+    return render(request, 'borrow_book.html', {"form": form, "book": book})
+
+
 
 
 def return_book(request, borrow_id):
@@ -183,7 +237,7 @@ def return_book(request, borrow_id):
     else:
         messages.warning(request, "This book is already returned.")
 
-    return redirect('home')
+    return render(request, 'book_detail.html', {"book": borrow.book})
     
 
 
