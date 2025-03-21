@@ -95,11 +95,20 @@ def book_list(request):
     return render(request,'book_list.html',{'books':page_obj})
 
 
-def book_detail(request,pk):
-    book=BooKtable.objects.get(pk=pk)
-    return render(request,'book_detail.html',{'book':book})
+def book_detail(request, book_id):
+    book = get_object_or_404(BooKtable, id=book_id)
+    user_rating =Bookrating.objects.filter(book=book, user=request.user).first()
+    user_has_borrowed = book.borrow_set.filter(user=request.user, is_returned=False).exists()
+    borrowed_books_count = Borrow.objects.filter(user=request.user, is_returned=False).values('book').distinct().count()
+    user_reached_limit = borrowed_books_count >= 5
 
-    
+    return render(request, "book_detail.html", {
+        "book": book,
+        "user_has_borrowed": user_has_borrowed,
+        "user_reached_limit": user_reached_limit,
+        'user_rating':user_rating
+    })
+
 
 def book_update(request,pk):
     book=BooKtable.objects.get(pk=pk)
@@ -122,18 +131,6 @@ def book_delete(request,pk):
     return redirect('book-list')
 
 
-# def rate_book(request, pk):
-#     book =BooKtable.objects.get (pk=pk)
-#     if request.method == 'POST':
-#         form = RatingForm(request.POST, instance=book)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('book-detail', pk=book.pk)
-#     else:
-#         form = RatingForm(instance=book)
-    
-#     return render(request, 'rate_book.html', {'form': form, 'book': book})
-
 def add_rating(request, pk):
     book = get_object_or_404(BooKtable, id=pk)
     if request.method == 'POST':
@@ -143,9 +140,9 @@ def add_rating(request, pk):
             rating, created = Bookrating.objects.update_or_create(
                 user=request.user,
                 book=book,
-                defaults={'user_rating': rating_value}
+                defaults={'user_rating': rating_value,}
             )
-            return redirect('book-detail', pk=pk)
+            return redirect('book-detail', book_id=pk)
     else:
         form = RatingForm()
     return render(request, 'rate_book.html', {'form': form, 'book': book})
@@ -172,25 +169,6 @@ def book_like(request, id):
         return redirect('comment', id=comment.book.id)
     
 
-# def borrow_book(request, book_id):
-#     book = get_object_or_404(BooKtable, id=book_id)
-#     if request.method=="POST":
-#         form=Borrowform(request.POST,instance=book)
-#         if form.is_valid():
-#             if book.available_copies > 0:
-#                 borrow = Borrow.objects.create(user=request.user, book=book)
-#                 book.available_copies -= 1
-#                 book.save()
-#                 messages.success(request, f"You have borrowed '{book.book_name}'. Return by {borrow.due_date}.")
-#         else:
-#              messages.error(request, "Sorry, this book is currently not available.")
-#     else:
-#         form=Borrowform()  
-#     return render(request,'borrow_book.html',{"form":form})
-
-
-
-
 def borrow_book(request, book_id):
     book = get_object_or_404(BooKtable, id=book_id)
     already_borrowed = Borrow.objects.filter(user=request.user, book=book, is_returned=False).exists()
@@ -205,11 +183,8 @@ def borrow_book(request, book_id):
                 borrow.user = request.user
                 borrow.book = book
                 borrow.save()
-                print(book.available_copies, "Before update")
                 book.available_copies -= 1
-                print(book.available_copies, "After update")
                 book.save()
-
                 messages.success(request, f"You have borrowed '{book.book_name}'. Return by {borrow.due_date}.")
             else:
                 messages.error(request, "Sorry, this book is currently not available.")
@@ -221,11 +196,9 @@ def borrow_book(request, book_id):
     return render(request, 'borrow_book.html', {"form": form, "book": book})
 
 
-
-
 def return_book(request, borrow_id):
     borrow = get_object_or_404(Borrow, id=borrow_id, user=request.user)
-
+    
     if not borrow.is_returned:
         borrow.is_returned = True
         borrow.return_date = date.today()
@@ -240,6 +213,17 @@ def return_book(request, borrow_id):
     return render(request, 'book_detail.html', {"book": borrow.book})
     
 
+
+def my_borrowed_books(request):
+    borrowed_books = Borrow.objects.filter(user=request.user).select_related('book')
+    returned_books = borrowed_books.filter(is_returned=True)
+    not_returned_books = borrowed_books.filter(is_returned=False)  
+
+    return render(request, 'borrowed.html', {
+        'borrowed_books':borrowed_books,
+        'not_returned_books': not_returned_books,
+        'returned_books': returned_books
+    })
 
 
 

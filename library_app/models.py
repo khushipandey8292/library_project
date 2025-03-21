@@ -46,7 +46,7 @@ class Bookrating(models.Model):
         super().save(*args, **kwargs)
         self.book.update_average_rating()
         
-class Borrow(models.Model):
+class Borrow(models.Model):   
     book=models.ForeignKey(BooKtable,on_delete=models.CASCADE)
     user=models.ForeignKey(User,on_delete=models.CASCADE) 
     issue_date = models.DateField(auto_now_add=True)
@@ -59,7 +59,7 @@ class Borrow(models.Model):
 
     def book_sr_no(self):
         return self.book.book_sr_no
-    
+           
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     book = models.ForeignKey(BooKtable, on_delete=models.CASCADE)

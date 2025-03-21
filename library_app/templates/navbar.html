@@ -53,6 +53,12 @@
             <li class="nav-item">
               <a class="nav-link text-white" href="{% url 'dashboard' %}">Dashboard</a>
             </li>
+            {% if perms.library_app.rate_book %}
+            {% else %}
+            <li class="nav-item">
+              <a class="nav-link text-white" href="{% url 'my_borrowed_books' %}">Borrowed books</a>
+            </li>
+            {% endif %}
             <li class="nav-item">
               <a class="nav-link text-white" href="{% url 'logout' %}">Logout</a>
             </li>

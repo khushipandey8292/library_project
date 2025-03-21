@@ -29,7 +29,7 @@ urlpatterns = [
     path("search/", views.search_book, name="search_book"),
     path('create/',views.create_book,name='book-create'),
     path('show/',views.book_list,name="book-list"),
-    path('book/<int:pk>/',views.book_detail,name='book-detail'),
+    path('book/<int:book_id>/',views.book_detail,name='book-detail'),
     path('book/<int:pk>/edit/',views.book_update,name='book-update'),
     path('book/<int:pk>/delete/',views.book_delete,name='book-delete'),
     path('rate/<int:pk>/',views.add_rating, name='add-rating'),
@@ -37,6 +37,7 @@ urlpatterns = [
     path('like/<int:id>/',views.book_like, name='like-book'),
     path('borrow/<int:book_id>/',views.borrow_book, name='borrow_book'),
     path('return/<int:borrow_id>/', views.return_book, name='return_book'),
+    path('my-borrowed-books/', views.my_borrowed_books, name='my_borrowed_books'),
 
 ]
   
