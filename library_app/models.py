@@ -25,7 +25,7 @@ class BooKtable(models.Model):
         return ",".join([str(p) for p in self.authors.all()])
     
     def __str__(self):
-        return f"{self.book_name}  ({self.book_cate}/{self.book_sr_no})"
+        return f"{self.book_name}"
     
     def update_average_rating(self):
         ratings = Bookrating.objects.filter(book=self)
@@ -59,7 +59,10 @@ class Borrow(models.Model):
 
     def book_sr_no(self):
         return self.book.book_sr_no
-           
+    
+    def book_cate(self):
+        return self.book.book_cate  
+     
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     book = models.ForeignKey(BooKtable, on_delete=models.CASCADE)
@@ -69,4 +72,5 @@ class Comment(models.Model):
     def total_likes(self):
         return self.likes.count()
                
+
 

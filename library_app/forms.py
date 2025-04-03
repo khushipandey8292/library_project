@@ -56,13 +56,15 @@ class BookForm(forms.ModelForm):
 
 
 class Borrowform(forms.ModelForm):
+    BookCategory = forms.CharField(disabled=True, required=False, widget=forms.TextInput(attrs={'class':'form-control'}))
+    BookSerialNo= forms.CharField(disabled=True, required=False,widget=forms.TextInput(attrs={'class':'form-control'}))
+    BookName=forms.CharField(disabled=True,required=False,widget=forms.TextInput(attrs={'class':'form-control'}))
     class Meta:
         model=Borrow
-        fields=['book','return_date','due_date']
+        fields=['BookName','BookCategory','BookSerialNo','return_date','due_date']
         widgets={
-                'book': forms.Select(attrs={'class': 'form-control'}),
                 'return_date':forms.DateInput(attrs={'class':'form-control'}),
-               'due_date':forms.TextInput(attrs={'class':'form-control'})       
+                'due_date':forms.TextInput(attrs={'class':'form-control'})       
         }
 
 # class LikeForm(forms.ModelForm):

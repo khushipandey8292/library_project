@@ -6,7 +6,6 @@ from django.contrib import messages
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib.auth import authenticate,login,logout
-from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.utils.timezone import now 
 from datetime import date
@@ -191,8 +190,7 @@ def borrow_book(request, book_id):
         else:
             messages.error(request, "Invalid data submitted.")
     else:
-        form = Borrowform()
-
+        form = Borrowform(initial={'BookName':book.book_name,"BookCategory":book.book_cate ,'BookSerialNo':book.book_sr_no})  
     return render(request, 'borrow_book.html', {"form": form, "book": book})
 
 
