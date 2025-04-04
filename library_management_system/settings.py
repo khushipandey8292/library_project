@@ -78,13 +78,23 @@ WSGI_APPLICATION = 'library_management_system.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }  
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "newdb",
+        "USER": "khushi",
+        "PASSWORD": "khushi1234",
+        "HOST": "localhost",
+        "PORT": "5432",
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -128,6 +138,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTHENTICATION_BACKENDS = [
+    'social_core.backends.google.GoogleOAuth2',
     'social_core.backends.github.GithubOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     
@@ -136,3 +147,7 @@ AUTHENTICATION_BACKENDS = [
 LOGIN_REDIRECT_URL = '/dashboard/'
 SOCIAL_AUTH_GITHUB_KEY='Ov23lihHY1swGv3nb4nI'
 SOCIAL_AUTH_GITHUB_SECRET='02ce754e8ef34fee7b0de1a7875d5733cd54f288'
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY="3786185291-0qsmbck1q6qt1gm6j9pb0k6darqjaoeq.apps.googleusercontent.com"
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET="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"
+LOGIN_REDIRECT_URL = '/dashboard/'
